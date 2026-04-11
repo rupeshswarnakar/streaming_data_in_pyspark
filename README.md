@@ -30,3 +30,11 @@ create table emp(id int, name string);
 insert into emp values
 (1, 'abc'),
 (2, 'xyz');
+
+### Real-World Use Cases
+
+- Processing app logs in real time
+- Monitoring transactions continuously
+- Streaming ETL pipelines
+- Updating dashboards with fresh data
+- Handling incremental data from Delta tables
