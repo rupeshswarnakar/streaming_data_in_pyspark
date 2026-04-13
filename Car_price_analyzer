@@ -1,0 +1,21 @@
+## Batch Analysis
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
+
+spark = SparkSession.builder.appName("Car Price Analyzer").getOrCreate()
+
+df = spark.read.csv("data/car_listings.csv", header=True, inferSchema=True)
+
+# Basic rule: price per mile
+df = df.withColumn("price_per_mile", col("price") / col("mileage"))
+
+# Categorize deals
+df = df.withColumn(
+    "deal_type",
+    (col("price_per_mile") < 0.08).cast("string")
+)
+
+df.show()
+
+df.write.mode("overwrite").parquet("output/batch_result")
