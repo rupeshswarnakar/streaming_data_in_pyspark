@@ -1,5 +1,4 @@
 ## Batch Analysis
-
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 
@@ -19,3 +18,28 @@ df = df.withColumn(
 df.show()
 
 df.write.mode("overwrite").parquet("output/batch_result")
+
+# Streaming Analysis:
+import uuid
+
+spark = SparkSession.builder.appName("Streaming Car Analyzer").getOrCreate()
+
+df = spark.readStream \
+    .option("header", True) \
+    .schema("car STRING, price DOUBLE, mileage DOUBLE") \
+    .csv("data/")
+
+df = df.withColumn("price_per_mile", col("price") / col("mileage"))
+
+good_deals = df.filter(col("price_per_mile") < 0.08)
+
+def process_batch(batch_df, batch_id):
+    print(f"Processing batch {batch_id}")
+    batch_df.write.mode("append").json("output/stream/" + str(uuid.uuid4()))
+
+query = good_deals.writeStream \
+    .foreachBatch(process_batch) \
+    .option("checkpointLocation", "checkpoint/") \
+    .start()
+
+query.awaitTermination()
