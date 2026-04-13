@@ -1,4 +1,17 @@
-## Batch Analysis
+# Overview
+This project analyzes car listings to identify good deals and overpriced vehicles using PySpark.
+
+It works in both:
+- Batch processing
+- Real-time streaming mode
+
+# Features
+- Calculate price per mile
+- Identify good deals automatically
+- Process streaming data in real-time
+- Save results for further analysis
+
+# Batch Analysis scripts
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 
@@ -19,7 +32,7 @@ df.show()
 
 df.write.mode("overwrite").parquet("output/batch_result")
 
-# Streaming Analysis:
+# Streaming Analysis scripts:
 import uuid
 
 spark = SparkSession.builder.appName("Streaming Car Analyzer").getOrCreate()
